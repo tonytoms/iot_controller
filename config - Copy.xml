@@ -1,0 +1,20 @@
+<master>
+	<ip>masterIP</ip>
+
+	<node>
+		<nip>node1IP</nip>
+		<bip>bknode1IP</bip>
+		<executables>
+			<file>node1execute1</file>
+		</executables>
+	</node>
+
+	<node>
+		<nip>node2IP</nip>
+		<bip>bknode2IP</bip>
+		<executables>
+			<file>node2execute1</file>
+		</executables>
+	</node>
+
+</master>
