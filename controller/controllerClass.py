@@ -69,6 +69,7 @@ def masterFileSender(node_ip):
     PORT = 5051
     ADDR = (HOST,PORT)
     BUFSIZE = 4096
+    
     data = "../temp/data.zip"
     bytes = open(data).read()
     #print (len(bytes))
