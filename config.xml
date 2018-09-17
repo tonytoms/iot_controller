@@ -1,20 +1,4 @@
 <master>
-	<ip>masterIP</ip>
+	<ip>192.168.1.10</ip>
 
-	<node>
-		<nip>node1IP</nip>
-		<bip>bknode1IP</bip>
-		<executables>
-			<file>node1execute1</file>
-		</executables>
-	</node>
-
-	<node>
-		<nip>node2IP</nip>
-		<bip>bknode2IP</bip>
-		<executables>
-			<file>node2execute1</file>
-		</executables>
-	</node>
-
-<node><nip>test</nip><nbip>test2t</nbip><executables><file>at</file><file>bt</file></executables></node><node><nip>test2</nip><nbip>test2</nbip><executables><file>a</file><file>b</file></executables></node></master>
+<node><nip>192.168.1.5</nip><nbip>192.168.1.2</nbip><executables><file>test2.py</file></executables></node></master>

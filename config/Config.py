@@ -3,7 +3,8 @@ from nodestatus import NodeStatus
 import lxml.etree as etree
 import os as os
 import shutil
-import utilities
+import utilities.Utilities as utilities
+import nodestatus
 
 '''
 Created on Sep 7, 2018
@@ -15,21 +16,27 @@ def deleteConfigNode( node_ip):
     values=NodeStatus.getNodeList()   
     tree = ElementTree.parse("..\config.xml")  
     root = tree.getroot()
-    if node_ip not in values:
-        return [False,'ERROR CODE 1001: Node with Ip Address :'+node_ip+" not found in config.xml"]
-    else:
-        for child in root:
-            if len(child)>0:
+    check=False
+    backup_node_ip=nodestatus.NodeStatus.getBackupNodeIp(node_ip)
+
+    for child in root:
+        if len(child)>0:
+            
+            if child[0].text != node_ip:
+                continue
+            else:
+                root.remove(child)
+                tree.write("..\config.xml")
+                check= True
                 
-                if child[0].text != node_ip:
-                    continue
-                else:
-                    root.remove(child)
-                    shutil.rmtree("../files/" +node_ip)
-                    tree.write("..\config.xml")
-                    return True
-        
-        return [False,'ERROR CODE 1002: Node with Ip Address :'+node_ip+" not found in config.xml"]
+    
+    
+    if(os.path.exists("../files/" +node_ip)):
+        shutil.rmtree("../files/" +node_ip)
+    if(os.path.exists("../files/" +backup_node_ip)):
+        shutil.rmtree("../files/" +backup_node_ip)   
+    
+    return [True,'']
 
 
 def createConfigNode( node_ip, backup_node_ip,executableList=[]):
@@ -61,16 +68,22 @@ def createConfigNode( node_ip, backup_node_ip,executableList=[]):
         tree = ElementTree.ElementTree(root)
         
         
-        
+        utilities.checkExistOrCreate("../files")
         path = "../files/"+node_ip
-        os.mkdir(path)
+        pathbkup = "../files/"+backup_node_ip
+        utilities.createOrReplace(path)
+        utilities.createOrReplace(pathbkup)
         
         child_root=ElementTree.Element("client")
         child_root.append(node_element)
         tree_child = ElementTree.ElementTree(child_root) 
         tree_child.write(path+"/configClient.xml")
+        tree_child.write(pathbkup+"/configClient.xml")
 
         tree.write("..\config.xml")
+        
+               
+        
         return True
        
 def updateConfigNode( node_ip, backup_node_ip,executableList=[]):
@@ -83,6 +96,6 @@ def updateConfigNode( node_ip, backup_node_ip,executableList=[]):
         deleteConfigNode(node_ip)
         createConfigNode(node_ip, backup_node_ip,executableList)
         return True
-#createConfigNode('test3','test2',['a','b'])
-deleteConfigNode('test3')
-#updateConfigNode('test3','test33',['at','bt'])
+deleteConfigNode('192.168.1.5')
+createConfigNode('192.168.1.5','192.168.1.2',['test2.py'])
+#updateConfigNode('192.168.1.2','192.168.1.5',['test1.py','test2.py'])

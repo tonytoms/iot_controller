@@ -27,4 +27,8 @@ def getBackupNodeIp(node_ip):
                 if child[0].text == node_ip:
                     return(child[1].text) 
     return("")            
-                
+def getMasterNodeIP():
+    tree = ElementTree.parse("..\config.xml")  
+    root = tree.getroot()
+    return root[0].text
+                  
