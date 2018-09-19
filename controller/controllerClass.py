@@ -1,15 +1,25 @@
 '''
-Created on Sep 13, 2018
+Created on Sep 12, 2018
 
-@author: Default
+@author: Tony Toms
+
+-------------Desc:----------------------
+
+This class is executed at controller node.
+This class has handlers the node API methods and Backup Node API methods using RMI call
+
+PORT 5050- used for RMI CALLS
+PORT 5051- used for file transfer 
+
 '''
+
 import sys
 import nodestatus
-sys.path.append("../")
+import os
+sys.path.append(".."+os.sep)
 import Pyro4
 import socket
 import utilities.Utilities as utilities
-import os
 import zipfile
 from nodestatus import NodeStatus
 import shutil
@@ -57,40 +67,39 @@ def loaderBackupNodeHandler(node_ip):
     ret_val=pyro_proxy.loaderBackupNode()
     return ret_val
 def sendDataToNode(node_ip):
-    utilities.createOrReplace("../temp")
-    if not os.path.isdir("../files/"+node_ip):
+    utilities.createOrReplace(".."+os.sep+"temp")
+    if not os.path.isdir(".."+os.sep+"files"+os.sep+node_ip):
         return [False,'ERROR CODE XXXX: Home Directory for node :'+node_ip+" doesn't exist"]
     #zipf = zipfile.ZipFile('../temp/data.zip', 'w', zipfile.ZIP_DEFLATED)
-    utilities.zipdir("../files/"+node_ip, "../temp/data")
+    utilities.zipdir(".."+os.sep+"files"+os.sep+node_ip, ".."+os.sep+"temp"+os.sep+"data")
     
     t = threading.Thread(target=masterFileSender)
     #masterFileSender(node_ip)
     t.start()
-    bytesToSend = str(os.path.getsize('../temp/data.zip'))
+    bytesToSend = str(os.path.getsize(".."+os.sep+"temp"+os.sep+"data.zip"))
     pyro_proxy=Pyro4.Proxy("PYRO:"+node_ip+".stub@"+node_ip+":5050")
     ret_val=pyro_proxy.startNodeFileReceiver(nodestatus.NodeStatus.getMasterNodeIP(),bytesToSend)
-    t.join()
+    return ret_val
     
 def sendDataToBackupNode(node_ip):
-    utilities.createOrReplace("../temp")
+    utilities.createOrReplace(".."+os.sep+"temp")
     backup_node_ip=NodeStatus.getBackupNodeIp(node_ip)
 
-    if not os.path.isdir("../files/"+backup_node_ip):
-        return [False,'ERROR CODE XXXX: Home Directory for node :'+backup_node_ip+" doesn't exist"]
-    #zipf = zipfile.ZipFile('../temp/data.zip', 'w', zipfile.ZIP_DEFLATED)
-    utilities.zipdir("../files/"+backup_node_ip, "../temp/data")
+    if not os.path.isdir(".."+os.sep+"files"+os.sep+backup_node_ip):
+        return [False,'ERROR CODE 3001: Home Directory for node :'+backup_node_ip+" doesn't exist"]
+    utilities.zipdir(".."+os.sep+"files"+os.sep+backup_node_ip, ".."+os.sep+"temp"+os.sep+"data")
     
     t = threading.Thread(target=masterFileSender)
     #masterFileSender(node_ip)
     t.start()
-    bytesToSend = str(os.path.getsize('../temp/data.zip'))
+    bytesToSend = str(os.path.getsize(".."+os.sep+"temp"+os.sep+"data.zip"))
     pyro_proxy=Pyro4.Proxy("PYRO:"+backup_node_ip+".stub@"+backup_node_ip+":5050")
     ret_val=pyro_proxy.startNodeFileReceiver(nodestatus.NodeStatus.getMasterNodeIP(),bytesToSend)
-    t.join()
+    return ret_val
 
 def masterFileSender():
 
-    data = "../temp/data.zip"
+    data = ".."+os.sep+"temp"+os.sep+"data.zip"
     
 
     host =nodestatus.NodeStatus.getMasterNodeIP()
@@ -116,7 +125,7 @@ def masterFileSender():
 
     
 
-#test()
+#testNode('192.168.1.2')
 #sendDataToNode('192.168.1.2')
 #loaderNodeHandler('192.168.1.2')
 #startNodeExecutionHandler('192.168.1.2')
@@ -126,5 +135,5 @@ def masterFileSender():
 #test()
 #sendDataToBackupNode('192.168.1.5')
 #loaderBackupNodeHandler('192.168.1.5')
-startBackupNodeExecutionHandler('192.168.1.5')
+#startBackupNodeExecutionHandler('192.168.1.5')
 #stopNodeExecutionHandler('192.168.1.2')

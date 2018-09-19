@@ -4,27 +4,24 @@ import zipfile
 '''
 Created on Sep 9, 2018
 
-@author: Default
+@author: Tony Toms
+
+-------------Desc----------------------
+Supporting functions to perform activities
 '''
 
+
+#This function create a directory if it doesn't exist. If the Directory exist , it will be replaced
 def createOrReplace(path):
     if os.path.isdir(path):
         shutil.rmtree(path)
     os.mkdir(path)
-        
+
+#Zip the folder        
 def zipdir(source, dest):
     shutil.make_archive(dest, 'zip', source)
 
-def cutPasteFile(source,dest):
-    shutil.move(source, dest)
-def unzipWithoutRoot(source,dest):
-    zip_ref = zipfile.ZipFile(source, 'r')
-    zip_ref.extractall(dest)
-    zip_ref.close()
-    
-    files = os.listdir(dest+"/"+source.split(".zip")[0])
 
-    shutil.copytree(dest+"/"+source.split(".zip")[0],dest)
 
 def checkExistOrCreate(path):
     if os.path.isdir(path):

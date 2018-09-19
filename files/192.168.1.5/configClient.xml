@@ -1,1 +1,1 @@
-<client><node><nip>192.168.1.5</nip><nbip>192.168.1.2</nbip><executables><file>test2.py</file></executables></node></client>
+<client><node><nip>192.168.1.2</nip><nbip>192.168.1.5</nbip><executables><file>test2.py</file></executables></node></client>
